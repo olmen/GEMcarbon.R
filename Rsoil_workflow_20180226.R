@@ -3,13 +3,11 @@
 
 # Check out this package: https://cran.r-project.org/web/packages/flux/flux.pdf
 
-library(dplyr)
 library(grDevices)
-require(ggplot2)
+library(ggplot2)
 library(tidyverse)
 library(lubridate)
-require(lubridate)
-require(tidyverse)
+
 
 
 # load functions
@@ -21,7 +19,7 @@ source("~/Github/GEMcarbon.R/EGM_fluxfunction_20171205.R")
 
 # load data
 
- 
+
 setwd("~/Github/gemcarbon_data/raw_data_ingemdb_forELDS/Gabon_KBJ_2018")
 rtot  = read.table("stem_resp_Lope.csv", sep=",", header=T)
 tottest = subset(rtot, plot_code %in% c("KOG-04", "KOG-05", "KOG-06", "NXV-01", "NXV-02"))
@@ -35,7 +33,7 @@ tottest %>% group_by(sub_plot) %>%
 
 #rpart      = read.table("part_soil_resp_20171205.csv", sep=",", header=T)
 #rpart_test = rpart %>% select(plot_code, sub_plot, plot_corner_code, collar_number, measurement_code, treatment_code_partitioning, disturbance_code_CTRL, litter_code, replica, year, egm_measurement, recno, day, month, co2ref_ppm_sec, time, atmp_mb) %>%
-                       #filter(plot_code == "TAM-05")
+#filter(plot_code == "TAM-05")
 
 # If we do have air temperature and collar height, merge the two datasets.
 rtot$uid = mutate(rtot, code = paste(plot_code, replica, year, month, day, sep = '_'))
@@ -91,7 +89,7 @@ rtot_0518 %>% group_by(plot_code) %>%
 
 # Partitionning
 control_bob03 = Res2 %>% select(plot_code, measurement_code, treatment_code_partitioning, year, month, avg, sd, collection_date) %>%
-                         filter(plot_code == "BOB-03" & treatment_code_partitioning == "con_nor_lit")
+  filter(plot_code == "BOB-03" & treatment_code_partitioning == "con_nor_lit")
 
 
 #write.csv(Res, file="rsoil_part_tam05_20171220.csv")
@@ -133,16 +131,16 @@ totflux = totflux %>% mutate(date = as.Date(paste(year, month, day, sep="."), fo
 
 
 Rtot = partflux %>% select(plot_code, sub_plot, collar_number, replica, day, month, year, measurement_code, treatment_code_partitioning, Rflux_MgC_ha_mo) %>%
-                    group_by(plot_code, year, month, day, measurement_code, treatment_code_partitioning) %>%
-                    mutate(id = paste(plot_code, sub_plot, day, month, year, sep = '_')) %>%
-                    filter(plot_code == "TAM-05" & treatment_code_partitioning == "con_nor_lit")
+  group_by(plot_code, year, month, day, measurement_code, treatment_code_partitioning) %>%
+  mutate(id = paste(plot_code, sub_plot, day, month, year, sep = '_')) %>%
+  filter(plot_code == "TAM-05" & treatment_code_partitioning == "con_nor_lit")
 
 Rtotdf = data.frame(Rtot)
 
 Rhet = partflux %>% select(plot_code, sub_plot, collar_number, replica, day, month, year, measurement_code, treatment_code_partitioning, Rflux_MgC_ha_mo) %>%
-                    group_by(plot_code, year, month, day, measurement_code, treatment_code_partitioning) %>%
-                    mutate(id = paste(plot_code, sub_plot, day, month, year, sep = '_')) %>%  
-                    filter(plot_code == "TAM-05" & treatment_code_partitioning == "so_nor_lit")
+  group_by(plot_code, year, month, day, measurement_code, treatment_code_partitioning) %>%
+  mutate(id = paste(plot_code, sub_plot, day, month, year, sep = '_')) %>%  
+  filter(plot_code == "TAM-05" & treatment_code_partitioning == "so_nor_lit")
 
 Rhetdf = data.frame(Rhet)
 
@@ -150,7 +148,7 @@ Rhetdf = data.frame(Rhet)
 # Try not being so restrictive on the join
 
 Rpartflux = Rtot %>% left_join(Rhet, by = "id") %>%
-                     mutate(date = as.Date(paste(year.x, month.x, day.x, sep="."), format="%Y.%m.%d"))
+  mutate(date = as.Date(paste(year.x, month.x, day.x, sep="."), format="%Y.%m.%d"))
 
 
 Rpartfluxdf = data.frame(Rpartflux)
@@ -163,32 +161,32 @@ Rpartfluxdf = Rpartfluxdf %>% mutate(Raut = Rflux_MgC_ha_mo.x - Rflux_MgC_ha_mo.
 # Plot KEN-01 & KEN-02
 # R total
 ken01_tot25 = totflux %>% select(plot_code, sub_plot, collar_number, replica, day, month, year, part_code, Rflux_MgC_ha_mo) %>%
-                          filter(plot_code == "KEN-01" & Rflux_MgC_ha_mo >= 0 & Rflux_MgC_ha_mo <= 20) %>%
-                          mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
+  filter(plot_code == "KEN-01" & Rflux_MgC_ha_mo >= 0 & Rflux_MgC_ha_mo <= 20) %>%
+  mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
 
 ken02_tot25 = totflux %>% select(plot_code, sub_plot, collar_number, replica, day, month, year, part_code, Rflux_MgC_ha_mo) %>%
-                          filter(plot_code == "KEN-02" & Rflux_MgC_ha_mo >= 0 & Rflux_MgC_ha_mo <= 20) %>%
-                          mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
+  filter(plot_code == "KEN-02" & Rflux_MgC_ha_mo >= 0 & Rflux_MgC_ha_mo <= 20) %>%
+  mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
 
 # R part 
 
 # Plots
 plot1 =  ggplot(ken01_tot25, aes(date, Rflux_MgC_ha_mo)) + 
-                geom_point(size = 1, colour = "dark grey", na.rm=T) +
-               #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 1, colour = "orange", na.rm=T) +
-               #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.25, colour = "red", na.rm=T) +
-                xlab("") + 
-                ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
-                ggtitle("KEN-01, Rsoil total 25 sub plots, Rpart") 
+  geom_point(size = 1, colour = "dark grey", na.rm=T) +
+  #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 1, colour = "orange", na.rm=T) +
+  #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.25, colour = "red", na.rm=T) +
+  xlab("") + 
+  ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
+  ggtitle("KEN-01, Rsoil total 25 sub plots, Rpart") 
 plot1
 
 plot2 =  ggplot(ken02_tot25, aes(date, Rflux_MgC_ha_mo)) + 
-                geom_point(size = 1, colour = "dark grey", na.rm=T) +
-               #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 1, colour = "orange", na.rm=T) +
-               #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.25, colour = "red", na.rm=T) +
-                xlab("") + 
-                ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
-                ggtitle("KEN-02, Rsoil total 25 sub plots, Rpart") 
+  geom_point(size = 1, colour = "dark grey", na.rm=T) +
+  #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 1, colour = "orange", na.rm=T) +
+  #geom_point(data = Rpartflux, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.25, colour = "red", na.rm=T) +
+  xlab("") + 
+  ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
+  ggtitle("KEN-02, Rsoil total 25 sub plots, Rpart") 
 plot2
 
 
@@ -201,23 +199,23 @@ plot2
 
 #plot total and heterotrophic and autotrophic on the same plot for TAN / TAM / BOB
 Rplot =  ggplot(Rpartfluxdf, aes(date, Rflux_MgC_ha_mo.x)) + 
-               geom_point(size = 0.75, colour = "dark grey", na.rm=T) +
-               geom_point(data = Rpartfluxdf, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.5, colour = "orange", na.rm=T) +
-               geom_point(data = Rpartfluxdf, aes(x = date, y = Raut), size = 0.25, colour = "red", na.rm=T) +
-               xlab("") + ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
-               ggtitle("TAM-05: grey = Rtot, orange = Rhet, red = Raut ") 
+  geom_point(size = 0.75, colour = "dark grey", na.rm=T) +
+  geom_point(data = Rpartfluxdf, aes(x = date, y = Rflux_MgC_ha_mo.y), size = 0.5, colour = "orange", na.rm=T) +
+  geom_point(data = Rpartfluxdf, aes(x = date, y = Raut), size = 0.25, colour = "red", na.rm=T) +
+  xlab("") + ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
+  ggtitle("TAM-05: grey = Rtot, orange = Rhet, red = Raut ") 
 Rplot
 
 
 total = totflux %>% select(plot_code, day, month, year, Rflux_MgC_ha_mo) %>%
-                    filter(Rflux_MgC_ha_mo >= -5 & Rflux_MgC_ha_mo <= 20) %>%
-                    mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
+  filter(Rflux_MgC_ha_mo >= -5 & Rflux_MgC_ha_mo <= 20) %>%
+  mutate(date = as.Date(paste(year, month, day, sep="."), format="%Y.%m.%d"))
 
 Rplot =  ggplot(total, aes(date, Rflux_MgC_ha_mo, colour = factor(total$plot_code))) + 
-                geom_point(size = 0.75, na.rm=T) +
-                xlab("") + ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
-                theme(legend.position = "bottom") +
-                ggtitle("Total R soil for all plots") 
+  geom_point(size = 0.75, na.rm=T) +
+  xlab("") + ylab(expression(paste("Rsoil (MgC ",ha^-1, month^-1, ")", sep=""))) +
+  theme(legend.position = "bottom") +
+  ggtitle("Total R soil for all plots") 
 Rplot
 
 
@@ -231,7 +229,3 @@ Rplot
 # To do for soil resp
 # save calculated sea & str data separately in ELDS
 # save calculated Santarem in ELDS 
-
-
-
-

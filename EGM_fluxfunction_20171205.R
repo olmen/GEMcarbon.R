@@ -9,12 +9,17 @@ Rflux <- function(datafile, ret="Res", plotname, collardiameter) {
   library(lubridate)
   
 # read in soil respiration auxillary functions from GitHub
-  setwd("~/Github/GEMcarbon.R")
-  source("~/Github/GEMcarbon.R/soilrespiration_auxfunctions.r")
+  source("soilrespiration_auxfunctions.r")
 
 ## subset datafile to estimate measurements per plot, or run it for all the plots (data = datafile)
-  data = datafile #subset(datafile, plot_code==plotname)
-    
+
+  if(missing(plotname)) {
+    data <- datafile
+  } else {
+    data <- subset(datafile, plot_code==plotname)
+  }
+
+
 #  TO DO: set a DEFAULT collar diameter
   collardiameter = 12 # 12 cm in Africa & Andes & TAM, 10.6 cm in Malaysia, 10.143 in JEN 
 

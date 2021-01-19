@@ -18,6 +18,7 @@ rm.flux.outlier <- function(flux_overall, sd_interval) {
 }
 
 ## remove temperature outlier:
+# temperature smaller than 5 or larger than 50 will be removed, and replaced with mean monthly temperature
 rm.temp.outlier <- function(temp, month) {
   temp[which(temp<5)]=NA   
   temp[which(temp>50)]=NA   
