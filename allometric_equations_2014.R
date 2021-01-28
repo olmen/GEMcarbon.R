@@ -34,7 +34,7 @@ Chave2014 <- function(diax, density, height) {
 # Note: A. Shenkin is developing our own surface area equation. 
 Chambers2004_surfaceArea <- function(diameter) {
   x = (log10(diameter))
-  surface_area = 10^(-0.015 - 0.686*x + (2.208*x)^2 - (0.627*x)^3)
+  surface_area = 10^(-0.015 - 0.686*x + 2.208*(x)^2 - 0.627*(x)^3)
   return(surface_area)
 }
 
